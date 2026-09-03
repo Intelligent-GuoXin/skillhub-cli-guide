@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillHub CLI · 使用手册</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF9F5;
+    --paper:#FFFFFF;
+    --ink:#141413;
+    --ink-2:#3A3A38;
+    --muted:#76746E;
+    --line:#E8E5DD;
+    --line-strong:#D6D2C7;
+    --accent:#C75F2C;
+    --accent-soft:#F4E8DD;
+    --accent-ink:#8B3E14;
+    --ok:#3B7A4B;
+    --code-bg:#1F1E1B;
+    --code-ink:#EAE8E1;
+    --code-muted:#7A7770;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Inter Tight","Inter",-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:15.5px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    font-feature-settings:"ss01","cv11";
+  }
+  code,pre,.mono{font-family:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;}
+  .serif{font-family:"Fraunces","Noto Serif SC",Georgia,"Times New Roman",serif;font-feature-settings:"ss01","ss02";}
+  .serif-zh{font-family:"Noto Serif SC","Fraunces",Georgia,serif;}
+
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(250,249,245,.86);
+    backdrop-filter:saturate(140%) blur(14px);
+    -webkit-backdrop-filter:saturate(140%) blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1240px;margin:0 auto;padding:14px 36px;
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);}
+  .brand-mark{
+    width:26px;height:26px;border-radius:8px;background:var(--ink);
+    display:grid;place-items:center;color:var(--bg);
+    font-family:"Fraunces",serif;font-size:15px;font-weight:500;letter-spacing:-.5px;
+  }
+  .brand-name{font-weight:600;letter-spacing:-.2px;font-size:14.5px;}
+  .brand-sep{color:var(--line-strong);margin:0 4px;}
+  .brand-sub{color:var(--muted);font-size:13.5px;}
+  .topnav{display:flex;gap:22px;}
+  .topnav a{color:var(--ink-2);text-decoration:none;font-size:13.5px;padding:6px 0;}
+  .topnav a:hover{color:var(--accent-ink);}
+
+  .hero{
+    max-width:1240px;margin:0 auto;padding:64px 36px 40px;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    color:var(--accent-ink);font-size:12.5px;letter-spacing:1.2px;
+    text-transform:uppercase;font-weight:500;margin-bottom:18px;
+  }
+  .eyebrow::before{content:"";width:18px;height:1px;background:var(--accent);}
+  .hero h1{
+    margin:0 0 18px;
+    font-family:"Fraunces",Georgia,serif;
+    font-size:clamp(40px,5.4vw,68px);
+    line-height:1.04;letter-spacing:-1.5px;font-weight:400;
+    color:var(--ink);max-width:18ch;
+  }
+  .hero h1 em{
+    font-style:italic;color:var(--accent);font-weight:400;
+  }
+  .hero .zh{
+    font-family:"Noto Serif SC",serif;font-size:19px;color:var(--ink-2);
+    max-width:48ch;line-height:1.6;margin:0 0 8px;
+  }
+  .hero .meta{
+    margin-top:30px;display:flex;flex-wrap:wrap;gap:28px;
+    color:var(--muted);font-size:13px;letter-spacing:.2px;
+  }
+  .hero .meta b{display:block;font-family:"Fraunces",serif;font-size:30px;font-weight:500;color:var(--ink);letter-spacing:-1px;line-height:1.1;}
+  .hero .meta span{display:block;margin-top:2px;}
+
+  .wrap{
+    max-width:1240px;margin:0 auto;padding:24px 36px 80px;
+    display:grid;grid-template-columns:228px 1fr;gap:60px;align-items:start;
+  }
+  .sidenav{
+    position:sticky;top:84px;
+    border-left:1px solid var(--line);
+    padding:6px 0 6px 18px;
+  }
+  .sidenav .nav-title{
+    font-size:11px;letter-spacing:1.4px;text-transform:uppercase;
+    color:var(--muted);font-weight:500;padding:0 0 12px;margin-left:-18px;padding-left:18px;
+  }
+  .sidenav a{
+    display:flex;align-items:baseline;gap:10px;
+    padding:7px 0;color:var(--ink-2);text-decoration:none;font-size:13.8px;
+    transition:color .15s;
+  }
+  .sidenav a .n{
+    font-family:"Fraunces",serif;color:var(--line-strong);
+    font-size:12px;width:22px;flex:none;font-weight:500;
+  }
+  .sidenav a:hover{color:var(--accent-ink);}
+  .sidenav a.on{color:var(--ink);font-weight:500;}
+  .sidenav a.on .n{color:var(--accent);}
+
+  main{min-width:0;}
+
+  section{
+    padding:18px 0 14px;
+    margin-bottom:54px;
+    scroll-margin-top:84px;
+    border-top:1px solid var(--line);
+    padding-top:46px;
+  }
+  section:first-of-type{border-top:none;padding-top:14px;}
+  .sec-head{display:flex;align-items:flex-start;gap:18px;margin-bottom:10px;}
+  .sec-num{
+    font-family:"Fraunces",serif;
+    font-size:14px;color:var(--accent);
+    width:32px;flex:none;font-weight:500;padding-top:6px;
+  }
+  .sec-head h2{
+    margin:0;
+    font-family:"Fraunces","Noto Serif SC",serif;
+    font-size:32px;font-weight:400;letter-spacing:-.6px;
+    line-height:1.2;color:var(--ink);
+  }
+  .sec-head .sub{
+    font-size:13.5px;color:var(--muted);margin-top:6px;
+    font-family:"Inter Tight",sans-serif;
+  }
+  .sec-desc{
+    color:var(--ink-2);font-size:15px;margin:14px 0 28px;
+    padding-left:50px;max-width:62ch;
+  }
+
+  .cmd{
+    display:grid;grid-template-columns:1fr;gap:10px;
+    padding:22px 0;border-top:1px solid var(--line);
+  }
+  .cmd:first-of-type{border-top:none;padding-top:8px;}
+  .cmd-desc{
+    font-size:14.5px;color:var(--ink-2);
+    display:flex;align-items:flex-start;gap:12px;padding-left:50px;
+  }
+  .cmd-desc .marker{
+    flex:none;width:6px;height:6px;margin-top:9px;
+    background:var(--accent);border-radius:1px;transform:rotate(45deg);
+  }
+  .cmd-desc em{font-style:normal;color:var(--muted);font-size:13px;}
+  .cmdline{
+    display:flex;align-items:stretch;gap:0;
+    background:var(--code-bg);border-radius:10px;overflow:hidden;
+    margin-left:50px;position:relative;
+    box-shadow:0 1px 0 rgba(0,0,0,.04), 0 8px 24px -16px rgba(20,20,19,.18);
+  }
+  .cmdline .stripe{width:4px;background:var(--accent);flex:none;}
+  .cmdline .prompt{
+    color:var(--code-muted);user-select:none;font-size:13.5px;flex:none;
+    padding:14px 0 14px 16px;
+  }
+  .cmdline code{
+    flex:1;min-width:0;color:var(--code-ink);font-size:13.4px;
+    padding:14px 12px;white-space:pre-wrap;word-break:break-all;line-height:1.6;
+  }
+  .cmdline code .c{color:#7d86b8;}
+  .cmdline code .f{color:#f0a45d;}
+  .cmdline code .v{color:#7fd6b5;}
+  .copy{
+    flex:none;border:none;cursor:pointer;
+    background:transparent;color:#9c978d;
+    font-size:12px;padding:0 18px;font-family:inherit;
+    transition:background .16s,color .16s;
+    border-left:1px solid #2c2b27;position:relative;
+  }
+  .copy:hover{background:#2a2925;color:#fff;}
+  .copy.done{background:var(--ok);color:#fff;}
+  .copy.done::after{
+    content:"\2713";position:absolute;top:-6px;right:-6px;width:16px;height:16px;
+    background:var(--ok);color:#fff;border-radius:50%;font-size:9.5px;line-height:16px;
+    text-align:center;font-weight:700;box-shadow:0 2px 6px rgba(59,122,75,.4);
+  }
+
+  .note{
+    margin:24px 0 0 50px;border-radius:8px;padding:14px 18px;
+    font-size:14px;line-height:1.65;
+    background:var(--accent-soft);border:1px solid #ecd9c6;color:var(--accent-ink);
+    display:flex;gap:12px;
+  }
+  .note.info{background:#EEF1F2;border-color:#d4dce0;color:#2C5159;}
+  .note b{font-weight:600;}
+  .note .ico{flex:none;font-weight:700;font-family:"Fraunces",serif;}
+
+  .tbl-wrap{margin-left:50px;margin-top:6px;overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:14px;background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  thead th{
+    text-align:left;padding:12px 16px;background:#F4F1EA;
+    color:var(--ink-2);font-weight:500;font-size:12.5px;
+    letter-spacing:.4px;border-bottom:1px solid var(--line);
+  }
+  tbody td{padding:13px 16px;border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody td:first-child{white-space:nowrap;font-weight:600;color:var(--ink);font-family:"JetBrains Mono",monospace;font-size:13px;}
+  td code{
+    background:#F2EFE7;border:1px solid var(--line);border-radius:4px;
+    padding:2px 7px;font-size:12.6px;color:var(--ink-2);white-space:nowrap;
+    font-family:"JetBrains Mono",monospace;
+  }
+
+  footer{
+    border-top:1px solid var(--line);margin-top:30px;
+    padding:36px 36px 48px;
+    color:var(--muted);font-size:13px;
+  }
+  .foot-inner{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+  .foot-inner .serif{font-style:italic;}
+
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
+  @media (max-width:980px){
+    .wrap{grid-template-columns:1fr;padding:0 22px 60px;gap:0;}
+    .sidenav{display:none;}
+    .hero{padding:42px 22px 24px;}
+    .hero h1{font-size:38px;}
+    .sec-desc,.cmd-desc,.cmdline,.note,.tbl-wrap{padding-left:0;margin-left:0;}
+    .cmdline{margin-left:0;}
+    .topbar-inner{padding:12px 22px;}
+    .topnav{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="#" class="brand">
+      <span class="brand-mark">S</span>
+      <span class="brand-name">SkillHub</span>
+      <span class="brand-sep">/</span>
+      <span class="brand-sub">CLI Manual</span>
+    </a>
+    <nav class="topnav">
+      <a href="#s1">环境准备</a>
+      <a href="#s2">身份认证</a>
+      <a href="#s3">检索</a>
+      <a href="#s4">安装</a>
+      <a href="#s5">更新</a>
+      <a href="#s6">发布</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">@astron-team/skillhub · v2026-09</div>
+  <h1 class="serif">A small <em>command-line</em> for the agent skill registry.</h1>
+  <p class="zh serif-zh">SkillHub CLI 的完整使用手册 —— 覆盖安装配置、身份认证、检索、安装、更新、发布与移除，按使用场景归置并可直接复制执行。</p>
+  <div class="meta">
+    <div><b class="serif">06</b><span>使用场景</span></div>
+    <div><b class="serif">21</b><span>命令示例</span></div>
+    <div><b class="serif">14</b><span>核心参数</span></div>
+    <div><b class="serif">03</b><span>平台配置方式</span></div>
+  </div>
+</section>
+
+<div class="wrap">
+  <aside class="sidenav">
+    <div class="nav-title">Contents</div>
+    <a href="#s1" class="on"><span class="n">01</span>环境准备</a>
+    <a href="#s2"><span class="n">02</span>身份认证</a>
+    <a href="#s3"><span class="n">03</span>技能检索</a>
+    <a href="#s4"><span class="n">04</span>安装技能</a>
+    <a href="#s5"><span class="n">05</span>查看与更新</a>
+    <a href="#s6"><span class="n">06</span>发布与移除</a>
+    <a href="#s7"><span class="n">07</span>参数速查</a>
+  </aside>
+
+  <main>
+
+    <section id="s1">
+      <div class="sec-head">
+        <div class="sec-num">01</div>
+        <div>
+          <h2>环境准备与配置</h2>
+          <div class="sub">Global install · Private registry address</div>
+        </div>
+      </div>
+      <p class="sec-desc">通过 npm 全局安装 CLI；若使用私有或自建 registry，需通过环境变量 <code>SKILLHUB_REGISTRY</code> 指定服务地址，三种终端的设置方式各不相同。</p>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>全局安装 CLI <em>—— 安装后即可使用 skillhub 命令</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code><span class="c">npm install -g</span> @astron-team/skillhub</code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>Linux / macOS —— 通过环境变量设置 Registry</span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code><span class="c">export</span> SKILLHUB_REGISTRY=https://skillhub.example.com</code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>Windows PowerShell —— 设置环境变量</span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">PS&gt;</span><code><span class="v">$env:SKILLHUB_REGISTRY</span>=<span class="f">"https://skillhub.example.com"</span></code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>Windows CMD —— 设置环境变量</span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">&gt;</span><code><span class="c">set</span> SKILLHUB_REGISTRY=https://skillhub.example.com</code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="note">
+        <span class="ico">!</span>
+        <div>PowerShell 与 CMD 的环境变量仅对<b>当前会话</b>生效，新开终端需重新设置；如需长期生效，请写入系统环境变量或使用 <code>setx</code>。</div>
+      </div>
+    </section>
+
+    <section id="s2">
+      <div class="sec-head">
+        <div class="sec-num">02</div>
+        <div>
+          <h2>身份认证</h2>
+          <div class="sub">Login · Identity · Logout</div>
+        </div>
+      </div>
+      <p class="sec-desc">发布技能、删除远程技能等写操作需要鉴权；检索与本地安装通常无需登录。若未设置 <code>SKILLHUB_REGISTRY</code> 环境变量，可在 <code>login</code> 时用 <code>--registry</code> 一并指定服务地址。</p>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>使用 Token 登录 <em>—— sk_xxx 替换为实际令牌</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub login <span class="f">--token</span> <span class="v">sk_xxx</span></code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>登录并指定 Registry <em>—— 免去配置环境变量，直连指定服务地址</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub login <span class="f">--token</span> <span class="v">sk_xxx</span> <span class="f">--registry</span> <span class="v">https://skill.xfyun.cn</span></code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>查看当前登录身份</span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub whoami</code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>退出登录 <em>—— 清除本地凭据</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub logout</code><button class="copy">Copy</button></div>
+      </div>
+    </section>
+
+    <section id="s3">
+      <div class="sec-head">
+        <div class="sec-num">03</div>
+        <div>
+          <h2>技能检索</h2>
+          <div class="sub">Search · Pagination · JSON output</div>
+        </div>
+      </div>
+      <p class="sec-desc">支持关键字模糊搜索；<code>--json</code> 与 <code>--limit</code> 组合可用于脚本化批量拉取技能清单。</p>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>按关键字搜索技能</span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub search weather</code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>分页拉取并以 JSON 输出 <em>—— 空关键字匹配全部；适合接入自动化流程</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub search <span class="f">""</span> <span class="f">--limit</span> <span class="v">50</span> <span class="f">--json</span></code><button class="copy">Copy</button></div>
+      </div>
+    </section>
+
+    <section id="s4">
+      <div class="sec-head">
+        <div class="sec-num">04</div>
+        <div>
+          <h2>安装技能</h2>
+          <div class="sub">Auto-detect · Multi-agent · Version / namespace / directory</div>
+        </div>
+      </div>
+      <p class="sec-desc">默认自动探测本机已安装的 Agent 目录并写入；也可显式指定目标 Agent、版本、命名空间或自定义目录。</p>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>安装到自动探测的 Agent 目录 <em>—— 最常用形式</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub install pdf-parser</code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>一次安装到多个 Agent <em>—— --agent 可重复使用</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub install weather <span class="f">--agent</span> codex <span class="f">--agent</span> claude-code</code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>指定版本安装</span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub install pdf-parser <span class="f">--version</span> <span class="v">1.2.0</span></code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>为裸 slug 指定命名空间 <em>—— 解决同名技能归属歧义</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub install pdf-parser <span class="f">--namespace</span> <span class="v">myspace</span></code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>安装到自定义目录</span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub install pdf-parser <span class="f">--dir</span> <span class="v">~/.claude/skills</span></code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>强制覆盖已存在的安装 <em>—— 也是升级单包的快捷方式</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub install pdf-parser <span class="f">--force</span></code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="note info">
+        <span class="ico">i</span>
+        <div><b>优先级提示：</b>显式 <code>--dir</code> 优先于 <code>--agent</code> 自动探测；若同一 slug 在多个 namespace 中存在，建议始终带上 <code>--namespace</code> 以确保安装来源唯一。</div>
+      </div>
+    </section>
+
+    <section id="s5">
+      <div class="sec-head">
+        <div class="sec-num">05</div>
+        <div>
+          <h2>查看与更新</h2>
+          <div class="sub">Listing · Bulk update · Overwrite strategy</div>
+        </div>
+      </div>
+      <p class="sec-desc">批量更新已安装技能；若某个包更新失败或需强制替换，可用 <code>--force</code> 或「先删后装」两种等效方式处理。</p>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>查看已安装技能列表</span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub list</code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>执行更新 <em>—— 更新全部已安装技能</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub update</code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>方式 A：使用 --force 覆盖安装</span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub install pdf-parser <span class="f">--force</span></code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>方式 B：先删除再安装 <em>—— 与方式 A 效果等价，清理更彻底</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub remove pdf-parser
+skillhub install pdf-parser</code><button class="copy">Copy</button></div>
+      </div>
+    </section>
+
+    <section id="s6">
+      <div class="sec-head">
+        <div class="sec-num">06</div>
+        <div>
+          <h2>发布与移除</h2>
+          <div class="sub">Publish to remote · Local remove · Remote delete</div>
+        </div>
+      </div>
+      <p class="sec-desc">发布时需指定命名空间与可见性；移除操作默认作用于本地，加上 <code>--remote</code> 才会删除远程技能（需鉴权并二次确认）。</p>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>发布本地技能目录 <em>—— 指定命名空间与可见性</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub publish <span class="v">./bear-showdoc</span> <span class="f">--namespace</span> <span class="v">development-center</span> <span class="f">--visibility</span> <span class="v">private</span></code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>裸 slug 移除 <em>—— 删除所有 namespace 中的同名本地安装</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub remove pdf-parser</code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>精确移除本地指定命名空间的技能</span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub remove pdf-parser <span class="f">--namespace</span> <span class="v">myspace</span></code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="cmd">
+        <div class="cmd-desc"><span class="marker"></span><span>删除远程技能 <em>—— 需要认证，会弹出确认提示</em></span></div>
+        <div class="cmdline"><div class="stripe"></div><span class="prompt">$</span><code>skillhub remove bear-showdoc <span class="f">--remote</span> <span class="f">--namespace</span> <span class="v">development-center</span></code><button class="copy">Copy</button></div>
+      </div>
+
+      <div class="note">
+        <span class="ico">!</span>
+        <div><b>高危操作：</b><code>remove --remote</code> 会从 registry 永久删除技能，且不带 <code>--namespace</code> 的裸 slug 移除会波及<b>所有命名空间</b>的同名本地安装，执行前请务必确认。</div>
+      </div>
+    </section>
+
+    <section id="s7">
+      <div class="sec-head">
+        <div class="sec-num">07</div>
+        <div>
+          <h2>参数速查</h2>
+          <div class="sub">Common flags at a glance</div>
+        </div>
+      </div>
+      <p class="sec-desc">下表汇总了各子命令支持的关键参数及适用范围。</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Flag</th><th>适用命令</th><th>说明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>--token</td><td>login</td><td>指定认证令牌，格式为 <code>sk_xxx</code></td></tr>
+            <tr><td>--registry</td><td>login</td><td>指定 registry 服务地址，优先于 <code>SKILLHUB_REGISTRY</code> 环境变量</td></tr>
+            <tr><td>--limit</td><td>search</td><td>分页大小，配合空关键字可拉取全量清单</td></tr>
+            <tr><td>--json</td><td>search</td><td>以 JSON 结构化输出，便于脚本解析</td></tr>
+            <tr><td>--agent</td><td>install</td><td>指定目标 Agent，可重复使用以安装到多处</td></tr>
+            <tr><td>--version</td><td>install</td><td>锁定安装版本，如 <code>1.2.0</code></td></tr>
+            <tr><td>--namespace</td><td>install / remove / publish</td><td>命名空间，用于消除同名技能歧义</td></tr>
+            <tr><td>--dir</td><td>install</td><td>自定义安装目录，优先于自动探测</td></tr>
+            <tr><td>--force</td><td>install</td><td>强制覆盖已存在的安装</td></tr>
+            <tr><td>--visibility</td><td>publish</td><td>可见性，如 <code>private</code> / <code>public</code></td></tr>
+            <tr><td>--remote</td><td>remove</td><td>作用于远程 registry，需鉴权并二次确认</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="foot-inner">
+    <span>SkillHub CLI Manual · <span class="serif">a small command-line for the agent skill registry</span></span>
+    <span class="serif">v2026.09 · @astron-team/skillhub</span>
+  </div>
+</footer>
+
+<div id="sr-live" class="sr-only" aria-live="polite"></div>
+
+<script>
+(function(){
+  function announce(msg){
+    var t=document.getElementById('sr-live');
+    if(t){t.textContent='';setTimeout(function(){t.textContent=msg;},30);}
+  }
+  function copyText(text,btn){
+    var done=function(){
+      btn.textContent='Copied';btn.classList.add('done');
+      setTimeout(function(){btn.textContent='Copy';btn.classList.remove('done');},1600);
+      announce('命令已复制到剪贴板');
+    };
+    if(navigator.clipboard&&window.isSecureContext){
+      navigator.clipboard.writeText(text).then(done,function(){fallback(text,done);});
+    }else{fallback(text,done);}
+  }
+  function fallback(text,done){
+    var ta=document.createElement('textarea');
+    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');done();}catch(e){announce('复制失败，请手动选择');}
+    document.body.removeChild(ta);
+  }
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var code=btn.closest('.cmdline').querySelector('code');
+      copyText(code.innerText,btn);
+    });
+  });
+
+  var links=[].slice.call(document.querySelectorAll('.sidenav a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  function onScroll(){
+    var y=window.scrollY+120,idx=0;
+    secs.forEach(function(s,i){ if(s&&s.offsetTop<=y) idx=i; });
+    links.forEach(function(a,i){a.classList.toggle('on',i===idx);});
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+})();
+</script>
+
+</body>
+</html>
